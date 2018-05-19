@@ -31,7 +31,7 @@ const getColKey = n => {
 
 class Excel {
     // 从 file 中读取 Excel 表格
-    init(file) {
+    openExcelFile(file) {
         try {
             this.workbook = xlsx.readFile(file);
             return true;
@@ -40,21 +40,24 @@ class Excel {
         }
     }
 
-    getContent(sheet, row = 10, col = 10) {
+    getExcelFirstSheet() {
+        return this.workbook.SheetNames[0];
+    }
+
+    getExcelData({current, startRow, startCol, rowCount, colCount}) {
         if (!this.workbook) {
             return false;
         }
 
         const sheets = this.workbook.SheetNames;
-        const current = sheet || sheets[0];
         const worksheet = this.workbook.Sheets[current];
         const rows = [];
 
-        for (let i = 1; i <= row; i++) {
+        for (let i = 0; i < +rowCount; i++) {
             const cols = [];
 
-            for (let j = 1; j <= col; j++) {
-                const cell = worksheet[getColKey(j) + i];
+            for (let j = 0; j < +colCount; j++) {
+                const cell = worksheet[getColKey(+startCol + j) + (+startRow + i)];
 
                 cols.push({
                     type: TYPE_TO_TEXT[getOr('s', 't', cell)],
@@ -63,8 +66,7 @@ class Excel {
             }
             rows.push(cols);
         }
-        // console.log(rows);
-        return {sheets, current, rows};
+        return {sheets, rows};
     }
 }
 

@@ -8,57 +8,59 @@ import {message} from 'antd';
 import {ipcRenderer} from 'electron';
 import {connect} from 'react-redux';
 import {bind} from 'lodash-decorators';
+import {handleReply} from '~/common/util';
+import {update_excel, update_filter} from '~/actions';
 import Filters from './Filters';
 import ContentTable from './ContentTable';
 import styles from './ExcelPreview.less';
 
 class ExcelPreview extends PureComponent {
-    state = {
-        sheets: [],
-        current: '未选择',
-        rows: []
-    };
-
     componentDidMount() {
-        const {current} = this.state;
-
-        ipcRenderer.send('get-excel-content', {current});
-        ipcRenderer.on('get-excel-content-reply', this.handleGetExcelContentReply);
+        ipcRenderer.on('get-excel-data-reply', this.handleGetExcelDataReply);
+        ipcRenderer.on('get-excel-first-sheet-reply', this.handleGetExcelFirstSheetReply);
+        ipcRenderer.send('get-excel-first-sheet');
     }
 
     componentWillUnmount() {
-        ipcRenderer.removeListener('get-excel-content-reply', this.handleGetExcelContentReply);
+        ipcRenderer.removeListener('get-excel-data-reply', this.handleGetExcelDataReply);
+        ipcRenderer.removeListener('get-excel-first-sheet-reply', this.handleGetExcelFirstSheetReply);
     }
 
     @bind()
-    handleGetExcelContentReply(event, reply) {
-        const {errcode, errmsg, data} = reply;
+    handleGetExcelFirstSheetReply(event, reply) {
+        handleReply(reply, this.props.updateFilter);
+    }
 
-        if (errcode) {
-            message.error(errmsg);
-        } else {
-            this.setState(data);
-        }
+    @bind()
+    handleGetExcelDataReply(event, reply) {
+        handleReply(reply, this.props.updateExcel);
     }
 
     render() {
-        const {sheets, current, rows} = this.state;
+        const {updateFilter, excel, filter} = this.props;
 
         return (
             <div className={styles.root}>
                 <Filters
-                    sheets={sheets}
-                    current={current}
-                    onChange={e => {console.log(e)}}
+                    sheets={excel.sheets}
+                    filter={filter}
+                    onChange={updateFilter}
                 />
-                <ContentTable rows={rows} />
+                <ContentTable className={styles.table} rows={excel.rows} />
             </div>
         );
     }
 }
 
-const mapStateToProps = ({fileList}) => ({fileList});
+const mapStateToProps = ({excel, filter}) => ({
+    excel, filter,
+});
+const mapDispatchToProps = {
+    updateExcel: update_excel,
+    updateFilter: update_filter
+};
 
 export default connect(
-    mapStateToProps
+    mapStateToProps,
+    mapDispatchToProps
 )(ExcelPreview);

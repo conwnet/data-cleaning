@@ -33,19 +33,26 @@ const openExcelFileListener = () => {
     });
 };
 
-// excel.init('/Users/zhangguoqing02/Desktop/test.xlsx');
+const getExcelDataListener = () => {
+    ipcMain.on('get-excel-data', (event, payload) => {
+        const send = sendToWorker(sendToRenderer(event, 'get-excel-data-reply'));
 
-const getExcelContentListener = () => {
-    ipcMain.on('get-excel-content', event => {
-        const send = sendToWorker(sendToRenderer(event, 'get-excel-content-reply'));
+        send({type: 'GET_EXCEL_DATA', payload});
+    });
+}
 
-        send({type: 'GET_EXCEL_CONTENT'});
+const getExcelFirstSheetListener = () => {
+    ipcMain.on('get-excel-first-sheet', (event, payload) => {
+        const send = sendToWorker(sendToRenderer(event, 'get-excel-first-sheet-reply'));
+
+        send({type: 'GET_EXCEL_FIRST_SHEET', payload});
     });
 }
 
 export default {
     init() {
         openExcelFileListener();
-        getExcelContentListener();
+        getExcelDataListener();
+        getExcelFirstSheetListener();
     }
 };

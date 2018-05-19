@@ -1,4 +1,4 @@
-class Response {
+class Reply {
     constructor(errcode, errmsg, data) {
         this.errcode = errcode;
         this.errmsg = errmsg;
@@ -6,4 +6,4 @@ class Response {
     }
 }
 
-export default Response;
+export default Reply;

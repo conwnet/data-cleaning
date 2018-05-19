@@ -20,7 +20,7 @@
                     "rootPathPrefix": "@",
                     "rootPathSuffix": "main"
                 }]
-            ]]
+            ], "transform-object-rest-spread"]
         }
     }
 }

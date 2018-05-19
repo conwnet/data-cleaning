@@ -1,14 +1,10 @@
-const fileList = (state = null, action) => {
-    const {type, payload} = action;
-
+const file = (state = null, {type, payload}) => {
     switch(type) {
-        case 'ADD_FILE':
-            return payload.file;
-        case 'DELETE_FILE':
-            return null;
+        case 'UPDATE_FILE':
+            return payload;
         default:
             return state;
     }
 }
 
-export default fileList;
+export default file;

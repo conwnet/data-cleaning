@@ -1,15 +1,9 @@
 import React, {PureComponent} from 'react';
+import {bind} from 'lodash-decorators';
+import {connect} from 'react-redux';
 import {Table} from 'antd';
+import {getOr} from 'lodash/fp';
 import styles from './ContentTable.less';
-import { NOTINITIALIZED } from 'dns';
-import { EAGAIN } from 'constants';
-
-const columns = [{
-    key: 'row',
-    render(text, record, index) {
-        return index + 1;
-    }
-}];
 
 const getColKey = n => {
     const base  = 'A'.codePointAt(0);
@@ -22,28 +16,73 @@ const getColKey = n => {
     return key;
 };
 
-const ContentTable = ({rows}) => {
-    for (let i = 0, l = rows.length; i < l; i++) {
-        columns.push({
-            title: getColKey(i + 1),
-            dataIndex: i,
-            key: i,
-            render(cell) {
-                return cell.value;
-            }
-        });
+class ColumnTile extends PureComponent {
+    @bind()
+    handleClick() {
+        const {onClick, index} = this.props;
+    
+        onClick(index);
     }
 
-    return (
-        <div className={styles.root}>
-            <Table
-                rowKey={'row'}
-                dataSource={rows}
-                columns={columns}
-                pagination={false}
-            />
-        </div>
-    );
-};
+    render() {
+        const {selected, children} = this.props;
+
+        return (
+            <div
+                onClick={this.handleClick}
+                className={selected ? styles.selectedColumn : ''}
+            >
+                {children}
+            </div>
+        );
+    }
+}
+
+class ContentTable extends PureComponent {
+    getColumns() {
+        const {rows} = this.props;
+
+        const columns = [{
+            key: 'row',
+            render(text, record, index) {
+                return index + 1;
+            }
+        }];
+    
+        for (let i = 1, l = getOr(0, '0.length', rows); i <= l; i++) {
+            columns.push({
+                title: (
+                    <ColumnTile
+                        index={i}
+                        // onClick={toggleColumn}
+                        // selected={selectedColumns.includes(i)}
+                    >
+                        {getColKey(i)}
+                    </ColumnTile>
+                ),
+                dataIndex: i - 1,
+                render(cell) {
+                    return cell.value;
+                }
+            });
+        }
+
+        return columns;
+    }
+
+    render() {
+        const {rows} = this.props;
+    
+        return (
+            <div className={styles.root}>
+                <Table
+                    dataSource={rows}
+                    columns={this.getColumns()}
+                    pagination={false}
+                />
+            </div>
+        );
+    }
+}
 
 export default ContentTable;

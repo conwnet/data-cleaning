@@ -1,28 +1,28 @@
 // 下一步按钮
-const next_step = () => ({
+export const next_step = () => ({
     type: 'NEXT_STEP'
 });
 
-// 上传文件
-const add_file = file => ({
-    type: 'ADD_FILE',
-    payload: {file}
+// 更新 file
+export const update_file = file => ({
+    type: 'UPDATE_FILE',
+    payload: file
 });
 
-// 删除文件
-const delete_file = file => ({
-    type: 'DELETE_FILE',
-    payload: {file}
+// 点击表格 th 切换已选择列
+export const toggle_rule_column = index => ({
+    type: 'TOGGLE_RULE_COLUMN',
+    payload: index
 });
 
-const update_file_list = fileList => ({
-    type: 'UPDATE_FILE_LIST',
-    payload: {fileList}
+// 更新 excel
+export const update_excel = data => ({
+    type: 'UPDATE_EXCEL',
+    payload: data
 });
 
-export {
-    next_step,
-    add_file,
-    delete_file,
-    update_file_list
-};
+// 更新 filter
+export const update_filter = filter => ({
+    type: 'UPDATE_FILTER',
+    payload: filter
+});

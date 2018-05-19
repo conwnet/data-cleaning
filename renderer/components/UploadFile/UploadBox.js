@@ -12,8 +12,8 @@ import withTimeout from 'react-timeout';
 import {bind} from 'lodash-decorators';
 import {ipcRenderer} from 'electron';
 import {Icon, message, Progress} from 'antd';
-import {nextProgress} from '~/common/util';
-import {add_file, delete_file} from '~/actions';
+import {nextProgress, handleReply} from '~/common/util';
+import {update_file} from '~/actions';
 import styles from './UploadBox.less';
 
 class UploadBox extends PureComponent {
@@ -31,15 +31,9 @@ class UploadBox extends PureComponent {
 
     @bind()
     handleOpenExcelFileReply(event, reply) {
-        const {errcode, errmsg, data} = reply;
-
-        if (!errcode) {
-            this.props.addFile(data);
-            message.success(errmsg);
-        } else {
+        handleReply(reply, this.props.updateFile, () => {
             this.setState({progress: -1});
-            message.error(errmsg);
-        }
+        });
     }
 
     @bind()
@@ -79,7 +73,7 @@ class UploadBox extends PureComponent {
     @bind()
     handleDelete() {
         this.setState({progress: 0});
-        this.props.deleteFile();
+        this.props.updateFile(null);
     }
 
     render() {
@@ -117,11 +111,9 @@ class UploadBox extends PureComponent {
 }
 
 const mapStateToProps = ({file}) => ({file});
-
-const mapDispatchToProps = dispatch => ({
-    addFile: file => dispatch(add_file(file)),
-    deleteFile: file => dispatch(delete_file(file))
-});
+const mapDispatchToProps = {
+    updateFile: update_file
+};
 
 export default compose(
     withTimeout,

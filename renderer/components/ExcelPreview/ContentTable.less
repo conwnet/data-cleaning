@@ -1,24 +1,41 @@
 .root {
+    height: 90%;
     width: 90%;
     overflow: auto;
+    margin-bottom: 10px;
 
-        table tr {
-            display: flex;
+    table tr {
+        display: flex;
 
-            th, td {
-                flex: 1;
-                padding: 4px;
-                min-width: 50px;
-                font-size: 12px;
-                border-left: 1px solid #f0f2f5;
-                border-bottom: 1px solid #f0f2f5;
-                background-color: #fafafa;
-                white-space: nowrap;
-                overflow: auto;
+        .selected-column {
+            padding: 0;
+            background: #1890ff;
+        }
 
-                &:first-child {
-                    border-right: 1px solid #f0f2f5;
-                }
+        th {
+            user-select: none;
+            text-align: center;
+
+            &:hover {
+                background-color: #eee;
             }
+        }
+
+        th, td {
+            flex: 1;
+            padding: 4px;
+            min-width: 50px;
+            font-size: 12px;
+            border-left: 1px solid #f0f2f5;
+            border-bottom: 1px solid #f0f2f5;
+            background-color: #fafafa;
+            white-space: nowrap;
+            overflow: auto;
+
+            &:first-child {
+                text-align: center;
+                border-right: 1px solid #f0f2f5;
+            }
+        }
     }
 }
