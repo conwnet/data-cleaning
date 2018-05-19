@@ -1,0 +1,24 @@
+.root {
+    width: 90%;
+    overflow: auto;
+
+        table tr {
+            display: flex;
+
+            th, td {
+                flex: 1;
+                padding: 4px;
+                min-width: 50px;
+                font-size: 12px;
+                border-left: 1px solid #f0f2f5;
+                border-bottom: 1px solid #f0f2f5;
+                background-color: #fafafa;
+                white-space: nowrap;
+                overflow: auto;
+
+                &:first-child {
+                    border-right: 1px solid #f0f2f5;
+                }
+            }
+    }
+}

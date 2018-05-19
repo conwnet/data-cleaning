@@ -1,0 +1,56 @@
+.root {
+    .box {
+        width: 300px;
+        height: 220px;
+        background-color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        border: 1px dashed #d9d9d9;
+        transition: border-color .3s;
+
+        &:hover {
+            border: 1px dashed #40a9ff;
+        }
+
+        i {
+            color: #40a9ff;
+            font-size: 50px;
+        }
+
+        div {
+            margin-top: 10px;
+        }
+
+        &[disabled] {
+            color: #d9d9d9;
+            cursor: not-allowed;
+            
+            i {
+                color: #d9d9d9;
+            }
+    
+            &:hover {
+                border-color: #d9d9d9;
+            }
+        }
+    }
+
+    .file {
+        color: rgba(0, 0, 0, .65);
+        margin-top: 5px;
+        padding: 0 10px;
+        transition: background-color 0.3s;
+
+        &:hover {
+            background-color: #dff;
+        }
+
+        i {
+            float: right;
+            font-size: 14px;
+            line-height: 20px;
+        }
+    }
+}
