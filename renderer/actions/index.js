@@ -9,12 +9,6 @@ export const update_file = file => ({
     payload: file
 });
 
-// 点击表格 th 切换已选择列
-export const toggle_rule_column = index => ({
-    type: 'TOGGLE_RULE_COLUMN',
-    payload: index
-});
-
 // 更新 excel
 export const update_excel = data => ({
     type: 'UPDATE_EXCEL',
@@ -25,4 +19,16 @@ export const update_excel = data => ({
 export const update_filter = filter => ({
     type: 'UPDATE_FILTER',
     payload: filter
+});
+
+// 点击表格 th 切换已选择列
+export const toggle_rule_column = index => ({
+    type: 'TOGGLE_RULE_COLUMN',
+    payload: index
+});
+
+// 更新清洗规则
+export const update_rule = rule => ({
+    type: 'UPDATE_RULE',
+    payload: rule
 });

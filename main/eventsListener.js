@@ -33,19 +33,29 @@ const openExcelFileListener = () => {
     });
 };
 
+// 获取 Excel 数据的 Listener
 const getExcelDataListener = () => {
     ipcMain.on('get-excel-data', (event, payload) => {
         const send = sendToWorker(sendToRenderer(event, 'get-excel-data-reply'));
 
         send({type: 'GET_EXCEL_DATA', payload});
     });
-}
+};
 
+// 获取 Excel 第一个 sheet 名称的 Listener
 const getExcelFirstSheetListener = () => {
     ipcMain.on('get-excel-first-sheet', (event, payload) => {
         const send = sendToWorker(sendToRenderer(event, 'get-excel-first-sheet-reply'));
 
         send({type: 'GET_EXCEL_FIRST_SHEET', payload});
+    });
+};
+
+const calculateListener = () => {
+    ipcMain.on('calculate', (event, payload) => {
+        const send = sendToWorker(sendToRenderer(event, 'calculate-reply'));
+
+        send({type: 'CALCULATE', payload});
     });
 }
 
@@ -54,5 +64,6 @@ export default {
         openExcelFileListener();
         getExcelDataListener();
         getExcelFirstSheetListener();
+        calculateListener();
     }
 };

@@ -5,7 +5,6 @@
 
 import React, {PureComponent} from 'react';
 import {bind} from 'lodash-decorators';
-import {ipcRenderer} from 'electron';
 import {connect} from 'react-redux';
 import {Button, Menu, Dropdown, Icon, Input} from 'antd';
 import {handleReply} from '~/common/util';
@@ -37,7 +36,7 @@ class Filters extends PureComponent {
     render() {
         const {sheets, filter, onChange} = this.props;
         const {current, startRow, startCol, rowCount, colCount} = filter;
-        const handleInput = key => e => onChange({[key]: e.target.value});
+        const handleChange = key => e => onChange({[key]: e.target.value});
 
         return (
             <div className={styles.root}>
@@ -46,10 +45,10 @@ class Filters extends PureComponent {
                     current={current}
                     onChange={onChange}
                 />
-                <Input addonBefore="起始行" value={startRow} onInput={handleInput('startRow')} />
-                <Input addonBefore="起始列" value={startCol} onInput={handleInput('startCol')} />
-                <Input addonBefore="显示行数" value={rowCount} onInput={handleInput('rowCount')} />
-                <Input addonBefore="显示列数" value={colCount} onInput={handleInput('colCount')} />
+                <Input addonBefore="起始行" value={startRow} onChange={handleChange('startRow')} />
+                <Input addonBefore="起始列" value={startCol} onChange={handleChange('startCol')} />
+                <Input addonBefore="显示行数" value={rowCount} onChange={handleChange('rowCount')} />
+                <Input addonBefore="显示列数" value={colCount} onChange={handleChange('colCount')} />
             </div>
         );
     }

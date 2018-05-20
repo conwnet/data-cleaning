@@ -1,4 +1,7 @@
-import {ipcRenderer} from 'electron';
+/**
+ * @file excel reducer
+ * @author netcon
+ */
 
 const initialState = {
     sheets: [],

@@ -3,8 +3,15 @@
  * @author netcon
  */
 
+import {merge} from 'lodash/fp';
+
 const initialState = {
     columns: [], // 用户选中的列
+    sort: {status: false},
+    unique: {status: false},
+    format: {status: false},
+    regexp: {status: false, rule: ''},
+    ai: {status: false}
 };
 
 const rule = (state = initialState, {type, payload}) => {
@@ -22,6 +29,8 @@ const rule = (state = initialState, {type, payload}) => {
 
             state.columns = [].concat(columns);
             return {...state};
+        case 'UPDATE_RULE':
+            return merge(state, payload);
         default:
             return state;
     }

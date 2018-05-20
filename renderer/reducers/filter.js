@@ -18,6 +18,7 @@ const filter = (state = initialState, {type, payload}) => {
         case 'UPDATE_FILTER':
             const newFilter = {...state, ...payload};
 
+            global.loading();
             ipcRenderer.send('get-excel-data', newFilter);
             return newFilter;
         default:

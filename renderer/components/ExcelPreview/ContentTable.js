@@ -25,13 +25,16 @@ class ColumnTile extends PureComponent {
     }
 
     render() {
-        const {selected, children} = this.props;
+        const {priority, children} = this.props;
 
         return (
             <div
                 onClick={this.handleClick}
-                className={selected ? styles.selectedColumn : ''}
+                className={priority > -1 ? styles.selectedColumn : ''}
             >
+                {priority > -1 ? (
+                    <span className={styles.priority}>{priority + 1}</span>
+                ) : null}
                 {children}
             </div>
         );
@@ -40,7 +43,7 @@ class ColumnTile extends PureComponent {
 
 class ContentTable extends PureComponent {
     getColumns() {
-        const {rows} = this.props;
+        const {rows, ruleColumns, toggleRuleColumn} = this.props;
 
         const columns = [{
             key: 'row',
@@ -48,22 +51,20 @@ class ContentTable extends PureComponent {
                 return index + 1;
             }
         }];
-    
+
         for (let i = 1, l = getOr(0, '0.length', rows); i <= l; i++) {
             columns.push({
                 title: (
                     <ColumnTile
                         index={i}
-                        // onClick={toggleColumn}
-                        // selected={selectedColumns.includes(i)}
+                        onClick={toggleRuleColumn}
+                        priority={ruleColumns.indexOf(i)}
                     >
                         {getColKey(i)}
                     </ColumnTile>
                 ),
-                dataIndex: i - 1,
-                render(cell) {
-                    return cell.value;
-                }
+                key: i,
+                dataIndex: i - 1
             });
         }
 
@@ -72,13 +73,14 @@ class ContentTable extends PureComponent {
 
     render() {
         const {rows} = this.props;
-    
+
         return (
             <div className={styles.root}>
                 <Table
+                    rowKey="key"
                     dataSource={rows}
-                    columns={this.getColumns()}
                     pagination={false}
+                    columns={this.getColumns()}
                 />
             </div>
         );

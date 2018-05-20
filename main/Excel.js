@@ -54,15 +54,13 @@ class Excel {
         const rows = [];
 
         for (let i = 0; i < +rowCount; i++) {
-            const cols = [];
+            const cols = {length: colCount, key: i};
 
             for (let j = 0; j < +colCount; j++) {
-                const cell = worksheet[getColKey(+startCol + j) + (+startRow + i)];
+                const key = getColKey(+startCol + j) + (+startRow + i);
+                const cell = worksheet[key];
 
-                cols.push({
-                    type: TYPE_TO_TEXT[getOr('s', 't', cell)],
-                    value: getOr('', 'v', cell)
-                });
+                cols[j] = getOr('', 'v', cell);
             }
             rows.push(cols);
         }

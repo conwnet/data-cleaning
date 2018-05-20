@@ -43,6 +43,12 @@ class Task {
     getExcelFirstSheet() {
         return new Reply(0, 'OK', {current: this.excel.getExcelFirstSheet()});
     }
+
+    calculate(payload) {
+        console.log(payload);
+
+        return new Reply(0, 'OK', {current: this.excel.getExcelFirstSheet()});
+    }
 }
 
 // 开始 worker 进程的监听

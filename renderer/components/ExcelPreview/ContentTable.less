@@ -1,15 +1,23 @@
 .root {
-    height: 90%;
+    max-height: 90%;
     width: 90%;
     overflow: auto;
     margin-bottom: 10px;
 
     table tr {
         display: flex;
+        justify-content: center;
 
         .selected-column {
             padding: 0;
-            background: #1890ff;
+            position: relative;
+            background-color: #1890ff;
+
+            .priority {
+                color: #fff;
+                position: absolute;
+                left: 5px;
+            }
         }
 
         th {
@@ -33,6 +41,7 @@
             overflow: auto;
 
             &:first-child {
+                user-select: none;
                 text-align: center;
                 border-right: 1px solid #f0f2f5;
             }
