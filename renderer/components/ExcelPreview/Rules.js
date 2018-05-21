@@ -127,10 +127,10 @@ class Rules extends PureComponent {
 
     @bind()
     startCalculate() {
-        const {rule, filter: {current}} = this.props;
+        const {rule, filter: {currentSheet}} = this.props;
 
         global.loading();
-        ipcRenderer.send('calculate', {...rule, current});
+        ipcRenderer.send('calculate', {...rule, currentSheet});
     }
 
     render() {

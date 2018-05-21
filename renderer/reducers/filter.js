@@ -6,7 +6,7 @@
 import {ipcRenderer} from 'electron';
 
 const initialState = {
-    current: '未选择', // 当前 sheet
+    currentSheet: '未选择', // 当前 sheet
     startRow: 1,
     startCol: 1,
     rowCount: 10,

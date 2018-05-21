@@ -4,6 +4,27 @@
     margin: 10px;
 
     &>span {
-        margin-left: 20px;
+        margin-left: 15px;
+    }
+
+    .sheet {
+        margin-left: 0 !important;
+        max-width: 140px;
+
+        span:first-child {
+            max-width: 100px;
+            overflow: hidden;
+            display: inline-block;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            line-height: 32px;
+        }
+
+        i {
+            position: relative;
+            top: -12px;
+            left: -10px;
+        }
     }
 }
+

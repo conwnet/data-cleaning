@@ -11,8 +11,8 @@ import {handleReply} from '~/common/util';
 import {update_excel_data} from '~/actions';
 import styles from './Filters.less';
 
-const SheetFilter = ({sheets, current, onChange}) => {
-    const handleClick = ({key}) => onChange({current: key});
+const SheetFilter = ({sheets, currentSheet, onChange}) => {
+    const handleClick = ({key}) => onChange({currentSheet: key});
     const menus = (
         <Menu onClick={handleClick}>
             {sheets.map(sheet => (
@@ -25,8 +25,8 @@ const SheetFilter = ({sheets, current, onChange}) => {
 
     return (
         <Dropdown overlay={menus}>
-            <Button style={{marginLeft: 8}}>
-                {current} <Icon type="down" />
+            <Button style={{marginLeft: 8}} className={styles.sheet}>
+                {currentSheet} <Icon type="down" />
             </Button>
         </Dropdown>
     );
@@ -35,16 +35,12 @@ const SheetFilter = ({sheets, current, onChange}) => {
 class Filters extends PureComponent {
     render() {
         const {sheets, filter, onChange} = this.props;
-        const {current, startRow, startCol, rowCount, colCount} = filter;
+        const {currentSheet, startRow, startCol, rowCount, colCount} = filter;
         const handleChange = key => e => onChange({[key]: e.target.value});
 
         return (
             <div className={styles.root}>
-                <SheetFilter
-                    sheets={sheets}
-                    current={current}
-                    onChange={onChange}
-                />
+                <SheetFilter sheets={sheets} currentSheet={currentSheet} onChange={onChange} />
                 <Input addonBefore="起始行" value={startRow} onChange={handleChange('startRow')} />
                 <Input addonBefore="起始列" value={startCol} onChange={handleChange('startCol')} />
                 <Input addonBefore="显示行数" value={rowCount} onChange={handleChange('rowCount')} />

@@ -46,8 +46,8 @@ class ExcelPreview extends PureComponent {
         return (
             <div className={styles.root}>
                 <Filters
-                    sheets={excel.sheets}
                     filter={filter}
+                    sheets={excel.sheets}
                     onChange={updateFilter}
                 />
                 <ContentTable

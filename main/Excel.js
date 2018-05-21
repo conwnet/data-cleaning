@@ -44,21 +44,21 @@ class Excel {
         return this.workbook.SheetNames[0];
     }
 
-    getExcelData({current, startRow, startCol, rowCount, colCount}) {
+    getExcelData({currentSheet, startRow, startCol, rowCount, colCount}) {
         if (!this.workbook) {
             return false;
         }
 
         const sheets = this.workbook.SheetNames;
-        const worksheet = this.workbook.Sheets[current];
+        const worksheet = this.workbook.Sheets[currentSheet];
         const rows = [];
+        console.log(worksheet);
 
         for (let i = 0; i < +rowCount; i++) {
             const cols = {length: colCount, key: i};
 
             for (let j = 0; j < +colCount; j++) {
-                const key = getColKey(+startCol + j) + (+startRow + i);
-                const cell = worksheet[key];
+                const cell = worksheet[getColKey(+startCol + j) + (+startRow + i)];
 
                 cols[j] = getOr('', 'v', cell);
             }
@@ -66,6 +66,39 @@ class Excel {
         }
         return {sheets, rows};
     }
+
+    sort(rule) {
+        const {currentSheet, columns} = this;
+        const worksheet = this.workbook.Sheets[currentSheet];
+        const mapRowKeys = {};
+        const mapRowValues = {};
+
+        Object.keys(worksheet).forEach(key => {
+            if (!key.startsWith('!')) {
+                const row = getOr('', 1, key.match(/[a-zA-Z]+(\d+)/));
+
+                if (!mapRowKeys[row]) {
+                    mapRowKeys[row] = [];
+                }
+
+                mapRowKeys[row].push(key);
+            }
+        });
+
+        console.log(rowCount, colCount);
+    }
 }
 
 export default Excel;
+
+
+
+/*
+{ ai: { status: false },
+  columns: [],
+  currentSheet: '107-2',
+  format: { status: false },
+  regexp: { rule: '', status: false },
+  sort: { status: true },
+  unique: { status: false } }
+*/

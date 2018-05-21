@@ -41,13 +41,13 @@ class Task {
 
     // 初始化时获取第一个 sheet
     getExcelFirstSheet() {
-        return new Reply(0, 'OK', {current: this.excel.getExcelFirstSheet()});
+        return new Reply(0, 'OK', {currentSheet: this.excel.getExcelFirstSheet()});
     }
 
     calculate(payload) {
         console.log(payload);
 
-        return new Reply(0, 'OK', {current: this.excel.getExcelFirstSheet()});
+        return new Reply(0, 'OK', {currentSheet: this.excel.getExcelFirstSheet()});
     }
 }
 
@@ -55,7 +55,7 @@ class Task {
 export const start = () => {
     const task = new Task();
 
-    task.excel.openExcelFile('/Users/zhangguoqing02/Desktop/sample.xlsx');
+    // task.excel.openExcelFile('/Users/zhangguoqing02/Desktop/sample.xlsx');
     worker.on('message', ({type, payload}) => {
         worker.send({
             type,
