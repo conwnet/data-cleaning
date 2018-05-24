@@ -45,7 +45,7 @@ class Task {
     }
 
     calculate(payload) {
-        console.log(payload);
+        this.excel.sort(payload);
 
         return new Reply(0, 'OK', {currentSheet: this.excel.getExcelFirstSheet()});
     }

@@ -1,5 +1,5 @@
 /**
- * @file 当前第几步的 reducer 
+ * @file 当前第几步的 reducer
  * @author netcon
  */
 

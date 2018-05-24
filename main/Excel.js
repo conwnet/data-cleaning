@@ -52,7 +52,7 @@ class Excel {
         const sheets = this.workbook.SheetNames;
         const worksheet = this.workbook.Sheets[currentSheet];
         const rows = [];
-        console.log(worksheet);
+        // console.log(worksheet);
 
         for (let i = 0; i < +rowCount; i++) {
             const cols = {length: colCount, key: i};
@@ -68,11 +68,11 @@ class Excel {
     }
 
     sort(rule) {
-        const {currentSheet, columns} = this;
+        const {currentSheet, columns} = rule;
         const worksheet = this.workbook.Sheets[currentSheet];
         const mapRowKeys = {};
-        const mapRowValues = {};
 
+        // console.log(worksheet);
         Object.keys(worksheet).forEach(key => {
             if (!key.startsWith('!')) {
                 const row = getOr('', 1, key.match(/[a-zA-Z]+(\d+)/));
@@ -85,7 +85,37 @@ class Excel {
             }
         });
 
-        console.log(rowCount, colCount);
+        const rowKeys = [];
+        const rowValues = [];
+        const sortByValue = (a, b) => a - b;
+        const getCellValue = key => ({k: key, v: getOr('', `${key}.v`, worksheet)});
+
+
+        Object.keys(mapRowKeys).sort(sortByValue).forEach(row => {
+            const keys = mapRowKeys[row].sort();
+
+            rowKeys.push(keys);
+            rowValues.push(keys.map(getCellValue));
+        });
+
+        const sortByColumns = (a, b) => {
+            const ra = columns.reduce((r, i) => '' + r + a[i - 1], '');
+            const rb = columns.reduce((r, i) => '' + r + b[i - 1], '');
+
+            return ra > rb ? 1 : -1;
+        }
+
+        const sortedRowValues = rowValues.sort(sortByColumns);
+        // console.log(sortedRowValues, rowKeys);
+        rowKeys.forEach((keys, i) => {
+            keys.forEach((key, j) => {
+                worksheet[key].v = sortedRowValues[i][j];
+                // console.log(key, i, j, sortedRowValues[i][j]);
+            });
+        });
+        console.log(sortedRowValues);
+
+        return true;
     }
 }
 
