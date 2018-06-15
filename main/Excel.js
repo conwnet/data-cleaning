@@ -4,7 +4,7 @@
  */
 
 import cluster from 'cluster';
-import xlsx from 'js-xlsx';
+import xlsx from 'xlsx';
 import {getOr} from 'lodash/fp';
 
 // xlsx 读取的数据类型
@@ -27,6 +27,18 @@ const getColKey = n => {
         n = (n - 1) / 26 | 0;
     }
     return key;
+};
+
+const getColNumber = k => {
+    const base = 'A'.codePointAt(0);
+    let number = 0;
+    let n = 1;
+
+    for (let i = k.length - 1; i >= 0; i--) {
+        number += (k.codePointAt(i) - base + 1) * n;
+        n *= 26;
+    }
+    return number;
 };
 
 class Excel {
@@ -52,7 +64,6 @@ class Excel {
         const sheets = this.workbook.SheetNames;
         const worksheet = this.workbook.Sheets[currentSheet];
         const rows = [];
-        // console.log(worksheet);
 
         for (let i = 0; i < +rowCount; i++) {
             const cols = {length: colCount, key: i};
@@ -72,51 +83,112 @@ class Excel {
         const worksheet = this.workbook.Sheets[currentSheet];
         const mapRowKeys = {};
 
-        // console.log(worksheet);
-        Object.keys(worksheet).forEach(key => {
+        if (!columns.length) {
+            return false;
+        }
+
+        Object.entries(worksheet).forEach(([key, value]) => {
             if (!key.startsWith('!')) {
-                const row = getOr('', 1, key.match(/[a-zA-Z]+(\d+)/));
+                const [_, col, row] = key.match(/([a-zA-Z]+)(\d+)/);
 
                 if (!mapRowKeys[row]) {
                     mapRowKeys[row] = [];
                 }
 
-                mapRowKeys[row].push(key);
+                mapRowKeys[row].push([col, value]);
             }
         });
 
-        const rowKeys = [];
-        const rowValues = [];
-        const sortByValue = (a, b) => a - b;
-        const getCellValue = key => ({k: key, v: getOr('', `${key}.v`, worksheet)});
-
-
-        Object.keys(mapRowKeys).sort(sortByValue).forEach(row => {
-            const keys = mapRowKeys[row].sort();
-
-            rowKeys.push(keys);
-            rowValues.push(keys.map(getCellValue));
-        });
-
-        const sortByColumns = (a, b) => {
-            const ra = columns.reduce((r, i) => '' + r + a[i - 1], '');
-            const rb = columns.reduce((r, i) => '' + r + b[i - 1], '');
-
-            return ra > rb ? 1 : -1;
+        const getRowWeight = row => columns.reduce((p, v) => (
+            p + getOr('', 'v', worksheet[getColKey(v) + row]) + '_'
+        ), '') + Math.random();
+        const rows = Object.keys(mapRowKeys);
+        const lines = rows.map(row => mapRowKeys[row]);
+        const weights = rows.map(row => getRowWeight(row));
+        const swap = (first, second) => {
+            [lines[first], lines[second]] = [lines[second], lines[first]];
+            [weights[first], weights[second]] = [weights[second], weights[first]];
         }
 
-        const sortedRowValues = rowValues.sort(sortByColumns);
-        // console.log(sortedRowValues, rowKeys);
-        rowKeys.forEach((keys, i) => {
-            keys.forEach((key, j) => {
-                worksheet[key].v = sortedRowValues[i][j];
-                // console.log(key, i, j, sortedRowValues[i][j]);
+        (function quickSort(left, right) {
+            if (right - left > 0) {
+                const rand = parseInt(Math.random() * (right - left + 1), 10) + left;
+                swap(left, rand);
+                const key = weights[left];
+                let p = left + 1, q = right;
+
+                while (p <= q) {
+                    if (weights[p] > key) {
+                        swap(p, q--);
+                    } else {
+                        p++;
+                    }
+                }
+                swap(left, p - 1);
+                quickSort(left, p - 2);
+                quickSort(p, right);
+            }
+        })(0, lines.length - 1);
+
+        Object.entries(worksheet).forEach(([key, value]) => {
+            if (!key.startsWith('!')) {
+                Reflect.deleteProperty(worksheet, key);
+            }
+        });
+
+        rows.forEach((row, idx) => {
+            lines[idx].forEach(([col, value]) => {
+                worksheet[col + row] = value;
             });
         });
-        console.log(sortedRowValues);
 
         return true;
     }
+
+    unique(rule) {
+        const {currentSheet, columns} = rule;
+        const worksheet = this.workbook.Sheets[currentSheet];
+        const mapRowKeys = {};
+
+        if (!columns.length) {
+            return false;
+        }
+
+        Object.entries(worksheet).forEach(([key, {v}]) => {
+            if (!key.startsWith('!')) {
+                const [_, col, row] = key.match(/([a-zA-Z]+)(\d+)/);
+
+                if (!mapRowKeys[row]) {
+                    mapRowKeys[row] = [];
+                }
+
+                const colIndex = getColNumber(col) - 1;
+                mapRowKeys[row][colIndex] = v;
+            }
+        });
+
+        const getRowWeight = row => columns.reduce((p, v) => {
+            const cell = getOr('', 'v', worksheet[getColKey(v) + row]);
+
+            return p + (cell ? cell + '_' : '');
+        }, '') || '' + Math.random() + Math.random();
+        const rows = Object.keys(mapRowKeys).sort((a, b) => a - b);
+        const lines = rows.map(row => mapRowKeys[row]);
+        const weights = rows.map(row => getRowWeight(row));
+        const sheetData = (memorize => lines.filter((_, idx) => {
+            if (!memorize[weights[idx]]) {
+                memorize[weights[idx]] = true;
+                return true;
+            } else {
+                return false;
+            }
+        }))({});
+
+        this.workbook.Sheets[currentSheet] = xlsx.utils.aoa_to_sheet(sheetData);
+
+        return true;
+    }
+
 }
 
 export default Excel;

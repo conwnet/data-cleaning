@@ -5,6 +5,7 @@
 
 import $path from 'path';
 import {worker} from 'cluster';
+import {getOr} from 'lodash/fp';
 import Excel from './Excel';
 import Reply from './Reply';
 
@@ -45,7 +46,13 @@ class Task {
     }
 
     calculate(payload) {
-        this.excel.sort(payload);
+        if (getOr(false, 'sort.status', payload)) {
+            this.excel.sort(payload);
+        }
+
+        if (getOr(false, 'unique.status', payload)) {
+            this.excel.unique(payload);
+        }
 
         return new Reply(0, 'OK', {currentSheet: this.excel.getExcelFirstSheet()});
     }
@@ -55,7 +62,7 @@ class Task {
 export const start = () => {
     const task = new Task();
 
-    // task.excel.openExcelFile('/Users/zhangguoqing02/Desktop/sample.xlsx');
+    task.excel.openExcelFile('/Users/zhangguoqing02/Desktop/sample.xlsx');
     worker.on('message', ({type, payload}) => {
         worker.send({
             type,
