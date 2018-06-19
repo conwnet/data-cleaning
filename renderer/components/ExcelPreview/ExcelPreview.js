@@ -4,7 +4,6 @@
  */
 
 import React, {PureComponent} from 'react';
-import {message} from 'antd';
 import {connect} from 'react-redux';
 import {bind} from 'lodash-decorators';
 import {ipcRenderer} from 'electron';

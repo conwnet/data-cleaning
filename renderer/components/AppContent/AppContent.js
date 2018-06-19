@@ -3,6 +3,7 @@ import {connect} from 'react-redux';
 import NextButton from '../NextButton';
 import UploadFile from '../UploadFile';
 import ExcelPreview from '../ExcelPreview';
+import ExportFile from '../ExportFile';
 import styles from './AppContent.less';
 
 const getContent = step => {
@@ -11,8 +12,10 @@ const getContent = step => {
             return <UploadFile />
         case 2:
             return <ExcelPreview />
+        case 3:
+            return <ExportFile />
         default:
-            return <div>NotFound</div>
+            return <div style={{textAlign: "center"}}>NotFound</div>
     }
 }
 

@@ -73,7 +73,7 @@ class RegExpRule extends PureComponent {
     }
 
     render() {
-        const {rule, type} = this.props;
+        const {rule} = this.props;
 
         return (
             <Input
@@ -112,7 +112,7 @@ class Rules extends PureComponent {
 
         return e => {
             updateRule({[type]: {status: e.target.checked}});
-            e.target.checked && this.setState(({current}) => ({current: type}));
+            e.target.checked && this.setState(() => ({current: type}));
         }
     }
 

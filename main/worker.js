@@ -45,6 +45,11 @@ class Task {
         return new Reply(0, 'OK', {currentSheet: this.excel.getExcelFirstSheet()});
     }
 
+    exportFile() {
+        this.excel.export();
+        return new Reply(0, 'OK');
+    }
+
     calculate(payload) {
         if (getOr(false, 'sort.status', payload)) {
             this.excel.sort(payload);
@@ -52,6 +57,18 @@ class Task {
 
         if (getOr(false, 'unique.status', payload)) {
             this.excel.unique(payload);
+        }
+
+        if (getOr(false, 'format.status', payload)) {
+            this.excel.format(payload);
+        }
+
+        if (getOr(false, 'regexp.status', payload)) {
+            this.excel.regexp(payload);
+        }
+
+        if (getOr(false, 'ai.status', payload)) {
+            this.excel.ai(payload);
         }
 
         return new Reply(0, 'OK', {currentSheet: this.excel.getExcelFirstSheet()});
@@ -62,7 +79,7 @@ class Task {
 export const start = () => {
     const task = new Task();
 
-    task.excel.openExcelFile('/Users/zhangguoqing02/Desktop/sample.xlsx');
+    // task.excel.openExcelFile('/Users/zhangguoqing02/Desktop/sample.xlsx');
     worker.on('message', ({type, payload}) => {
         worker.send({
             type,

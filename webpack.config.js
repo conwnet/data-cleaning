@@ -24,6 +24,9 @@ module.exports = (env = {}) => {
             }, {
                 test: /\.less$/,
                 use: ['style-loader', 'css-loader?modules&camelCase', 'less-loader?javascriptEnabled']
+            }, {
+                test: /\.(png|jpg|jpeg|gif)$/,
+                loader: 'file-loader'
             }]
         },
         plugins: [

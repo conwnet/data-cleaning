@@ -4,9 +4,7 @@
  */
 
  import React, {PureComponent} from 'react';
-import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
-import {noop} from 'lodash/fp';
 import {compose} from 'recompose';
 import withTimeout from 'react-timeout';
 import {bind} from 'lodash-decorators';

@@ -3,7 +3,6 @@
  * @author netcon
  */
 
-import cluster from 'cluster';
 import xlsx from 'xlsx';
 import {getOr} from 'lodash/fp';
 
@@ -187,6 +186,143 @@ class Excel {
         this.workbook.Sheets[currentSheet] = xlsx.utils.aoa_to_sheet(sheetData);
 
         return true;
+    }
+
+    format(rule) {
+        const {currentSheet, columns} = rule;
+        const worksheet = this.workbook.Sheets[currentSheet];
+        const mapRowKeys = {};
+
+        if (!columns.length) {
+            return false;
+        }
+
+        Object.entries(worksheet).forEach(([key, {v}]) => {
+            if (!key.startsWith('!')) {
+                const [_, col, row] = key.match(/([a-zA-Z]+)(\d+)/);
+
+                if (!mapRowKeys[row]) {
+                    mapRowKeys[row] = [];
+                }
+
+                const colIndex = getColNumber(col) - 1;
+                mapRowKeys[row][colIndex] = v;
+            }
+        });
+
+        const rows = Object.keys(mapRowKeys).sort((a, b) => a - b);
+        const lines = rows.map(row => mapRowKeys[row]);
+        const getBlockWeight = str => {
+            if (/^.*[\u4e00-\u9fa5].*$/.test(str)) return 0;
+            if (/^[a-zA-Z].*$/.test(str)) return 1;
+            if (/^[0-9].*$/.test(str)) return 2;
+            return 3;
+        };
+        lines.forEach(line => {
+            columns.forEach(col => {
+                line[col - 1] = ('' + line[col - 1]).split('/').sort((a, b) => (
+                    getBlockWeight(a) - getBlockWeight(b)
+                )).join('/');
+            });
+        });
+
+        this.workbook.Sheets[currentSheet] = xlsx.utils.aoa_to_sheet(lines);
+
+        return true;
+    }
+
+    regexp(rule) {
+        const {currentSheet, columns, regexp} = rule;
+        const worksheet = this.workbook.Sheets[currentSheet];
+        const mapRowKeys = {};
+
+        if (!columns.length) {
+            return false;
+        }
+
+        Object.entries(worksheet).forEach(([key, {v}]) => {
+            if (!key.startsWith('!')) {
+                const [_, col, row] = key.match(/([a-zA-Z]+)(\d+)/);
+
+                if (!mapRowKeys[row]) {
+                    mapRowKeys[row] = [];
+                }
+
+                const colIndex = getColNumber(col) - 1;
+                mapRowKeys[row][colIndex] = v;
+            }
+        });
+
+        const getRowWeight = row => columns.reduce((p, v) => {
+            const cell = getOr('', 'v', worksheet[getColKey(v) + row]);
+
+            return p + (cell ? cell + '_' : '');
+        }, '') || '' + Math.random() + Math.random();
+        const rows = Object.keys(mapRowKeys).sort((a, b) => a - b);
+        const lines = rows.map(row => mapRowKeys[row]);
+        const weights = rows.map(row => getRowWeight(row));
+        const sheetData = lines.filter((_, idx) => (
+            new RegExp(regexp.rule).test(weights[idx])
+        ));
+
+        this.workbook.Sheets[currentSheet] = xlsx.utils.aoa_to_sheet(sheetData);
+
+        return true;
+    }
+
+    ai(rule) {
+        const {currentSheet, columns} = rule;
+        const worksheet = this.workbook.Sheets[currentSheet];
+        const mapRowKeys = {};
+
+        if (!columns.length) {
+            return false;
+        }
+
+        Object.entries(worksheet).forEach(([key, {v}]) => {
+            if (!key.startsWith('!')) {
+                const [_, col, row] = key.match(/([a-zA-Z]+)(\d+)/);
+
+                if (!mapRowKeys[row]) {
+                    mapRowKeys[row] = [];
+                }
+
+                const colIndex = getColNumber(col) - 1;
+                mapRowKeys[row][colIndex] = v;
+            }
+        });
+
+        const rows = Object.keys(mapRowKeys).sort((a, b) => a - b);
+        const lines = rows.map(row => mapRowKeys[row]);
+        const ADD_SLASH_REG_EXP = /^([a-zA-Z-]*[\u4e00-\u9fa5]+)(.*)$/;
+        lines.forEach(line => {
+            columns.forEach(col => {
+                
+            });
+
+            columns.forEach(col => {
+                let cell = '' + line[col - 1];
+
+                // 删除无用项
+                cell = cell.split('/').filter($ => $).join('/');
+                // 适当添加 /
+                if (!cell.includes('/') && ADD_SLASH_REG_EXP.test(cell)) {
+                    cell = cell.replace(ADD_SLASH_REG_EXP, (_, $1, $2) => $1 + '/' + $2);
+                }
+                // 连续空格置为一个
+                cell = cell.replace(/ +/g, ' ');
+
+                line[col - 1] = cell;
+            });
+        });
+
+        this.workbook.Sheets[currentSheet] = xlsx.utils.aoa_to_sheet(lines);
+
+        return true;
+    }
+
+    export() {
+        xlsx.writeFile(this.workbook, 'export.xlsx');
     }
 
 }

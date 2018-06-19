@@ -1,3 +1,7 @@
+/**
+ * @file 处理主进程的事件监听
+ * @author netcon
+ */
 import {ipcMain, dialog} from 'electron';
 import {curry} from 'lodash/fp';
 import Reply from './Reply';
@@ -59,11 +63,20 @@ const calculateListener = () => {
     });
 }
 
+const exportFileListener = () => {
+    ipcMain.on('export-file', (event, payload) => {
+        const send = sendToWorker(sendToRenderer(event, 'export-file-reply'));
+
+        send({type: 'EXPORT_FILE', payload});
+    });
+}
+
 export default {
     init() {
         openExcelFileListener();
         getExcelDataListener();
         getExcelFirstSheetListener();
         calculateListener();
+        exportFileListener();
     }
 };
